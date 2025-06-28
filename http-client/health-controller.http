@@ -1,0 +1,77 @@
+### Health Check - Basic Test
+GET http://localhost:8080/health
+Accept: application/json
+
+### Health Check - With Headers
+GET http://localhost:8080/health
+Accept: application/json
+Content-Type: application/json
+User-Agent: IntelliJ-HTTP-Client
+
+### Health Check - Local Profile
+GET http://localhost:8080/health
+Accept: application/json
+
+> {%
+    client.test("Health Check Response", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+
+        // Response body validation
+        var jsonResponse = response.body;
+        client.assert(jsonResponse.status !== undefined, "status field is missing");
+        client.assert(jsonResponse.message !== undefined, "message field is missing");
+        client.assert(jsonResponse.timestamp !== undefined, "timestamp field is missing");
+
+        // Status should be successful
+        client.assert(jsonResponse.status === "UP" || jsonResponse.status === "OK", "Health status is not healthy");
+    });
+%}
+
+### Health Check - Different Environments
+# Development Environment
+GET http://localhost:8080/health
+Accept: application/json
+
+###
+# Production-like Environment (if different port)
+GET http://localhost:9090/health
+Accept: application/json
+
+### Health Check with Custom Headers
+GET http://localhost:8080/health
+Accept: application/json
+X-Request-ID: test-health-check-001
+Authorization: Bearer dummy-token
+
+### Health Check - Performance Test
+GET http://localhost:8080/health
+Accept: application/json
+
+> {%
+    client.test("Response Time Check", function() {
+        client.assert(response.responseTime < 1000, "Response time is too slow: " + response.responseTime + "ms");
+    });
+%}
+
+### Health Check - Error Scenario (Wrong Endpoint)
+GET http://localhost:8080/health/invalid
+Accept: application/json
+
+> {%
+    client.test("Invalid Endpoint Test", function() {
+        client.assert(response.status === 404, "Expected 404 but got " + response.status);
+    });
+%}
+
+### Actuator Health Check (if enabled)
+GET http://localhost:8080/actuator/health
+Accept: application/json
+
+> {%
+    client.test("Actuator Health Check", function() {
+        client.assert(response.status === 200, "Actuator health check failed");
+        var jsonResponse = response.body;
+        client.assert(jsonResponse.status !== undefined, "Actuator status field is missing");
+    });
+%}

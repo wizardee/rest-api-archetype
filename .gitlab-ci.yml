@@ -1,0 +1,28 @@
+image: maven:3.9.10-openjdk-17
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+
+cache:
+  paths:
+    - .m2/repository/
+
+build-archetype:
+  stage: build
+  script:
+    - mvn clean archetype:create-from-project
+  artifacts:
+    paths:
+      - target/generated-sources/archetype/
+    expire_in: 1 hour
+
+deploy-archetype:
+  stage: deploy
+  dependencies:
+    - build-archetype
+  script:
+    - cd target/generated-sources/archetype
+    - mvn clean deploy
+  only:
+    - main

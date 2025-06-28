@@ -1,0 +1,24 @@
+server:
+  port: 8080
+#  servlet:
+#    context-path: /api
+
+spring:
+  application:
+    name: rest-api-template
+  profiles:
+    active: local
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.company.api: DEBUG
+    org.springframework.web: DEBUG
