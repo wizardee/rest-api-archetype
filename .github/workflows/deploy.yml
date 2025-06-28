@@ -24,7 +24,13 @@ jobs:
 
     - name: Create archetype from project
       run: mvn clean archetype:create-from-project
-      
+
+    - name: Debug - Check generated archetype pom.xml
+      run: |
+        echo "=== Generated archetype pom.xml content ==="
+        cat target/generated-sources/archetype/pom.xml
+        echo "=== End of pom.xml ==="
+
     - name: Deploy archetype to GitHub Packages
       run: |
         cd target/generated-sources/archetype
