@@ -1,0 +1,33 @@
+name: Deploy Maven Archetype
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Create archetype from project
+      run: mvn clean archetype:create-from-project
+
+    - name: Deploy archetype to GitHub Packages
+      run: |
+        cd target/generated-sources/archetype
+        mvn clean deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
