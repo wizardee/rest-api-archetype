@@ -28,16 +28,25 @@ jobs:
     - name: Add distributionManagement to generated archetype
       run: |
           cd target/generated-sources/archetype
-          
-          # </project> 태그 바로 앞에 distributionManagement 추가
-          sed -i 's|</project>|  <distributionManagement>\
-        <repository>\
-        <id>github</id>\
-        <name>GitHub Packages</name>\
-        <url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>\
-        </repository>\
-        </distributionManagement>\
-        </project>|' pom.xml
+        
+        # distributionManagement를 파일로 만들고 추가
+        cat > distribution.xml << 'EOF'
+        <distributionManagement>
+          <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>
+          </repository>
+        </distributionManagement>
+        EOF
+        
+        # </project> 앞에 삽입
+        sed -i '/<\/project>/i\
+        ' pom.xml
+        sed -i '/<\/project>/e cat distribution.xml' pom.xml
+        
+        # 임시 파일 삭제
+        rm distribution.xml
 
     - name: Debug - Check generated archetype pom.xml
       run: |
