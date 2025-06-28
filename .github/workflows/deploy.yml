@@ -24,6 +24,12 @@ jobs:
 
     - name: Create archetype from project
       run: mvn clean archetype:create-from-project
+      
+    - name: Update archetype pom.xml for GitHub Packages
+      run: |
+        cd target/generated-sources/archetype
+        # distributionManagement 부분을 GitHub Packages용으로 수정
+        sed -i 's|<url>.*</url>|<url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>|g' pom.xml
 
     - name: Deploy archetype to GitHub Packages
       run: |
