@@ -73,3 +73,21 @@ jobs:
         mvn clean deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create archetype catalog
+      run: |
+        mkdir -p catalog
+        cat > catalog/archetype-catalog.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <archetype-catalog>
+          <archetypes>
+            <archetype>
+              <groupId>net.herit.rookie</groupId>
+              <artifactId>rest-api-template-archetype</artifactId>
+              <version>0.0.1-SNAPSHOT</version>
+              <repository>https://maven.pkg.github.com/wizardee/rest-api-archetype</repository>
+              <description>Spring Boot 3.3 REST API Template</description>
+            </archetype>
+          </archetypes>
+        </archetype-catalog>
+        EOF
