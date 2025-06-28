@@ -25,28 +25,41 @@ jobs:
     - name: Create archetype from project
       run: mvn clean archetype:create-from-project
 
-    - name: Add distributionManagement to generated archetype
+    - name: Create new pom.xml with distributionManagement
       run: |
-          cd target/generated-sources/archetype
-        
-        # distributionManagement를 파일로 만들고 추가
-        cat > distribution.xml << 'EOF'
-        <distributionManagement>
-          <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>
-          </repository>
-        </distributionManagement>
+        cd target/generated-sources/archetype
+        mv pom.xml pom-original.xml
+
+        cat > pom.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+          <modelVersion>4.0.0</modelVersion>
+          <groupId>net.herit.rookie</groupId>
+          <artifactId>rest-api-template-archetype</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+          <packaging>maven-archetype</packaging>
+          <name>rest-api-template-archetype</name>
+          <description>rest-api-template</description>
+
+          <build>
+            <extensions>
+              <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>3.4.0</version>
+              </extension>
+            </extensions>
+          </build>
+
+          <distributionManagement>
+            <repository>
+              <id>github</id>
+              <name>GitHub Packages</name>
+              <url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>
+            </repository>
+          </distributionManagement>
+        </project>
         EOF
-        
-        # </project> 앞에 삽입
-        sed -i '/<\/project>/i\
-        ' pom.xml
-        sed -i '/<\/project>/e cat distribution.xml' pom.xml
-        
-        # 임시 파일 삭제
-        rm distribution.xml
 
     - name: Debug - Check generated archetype pom.xml
       run: |
