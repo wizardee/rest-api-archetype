@@ -25,6 +25,20 @@ jobs:
     - name: Create archetype from project
       run: mvn clean archetype:create-from-project
 
+    - name: Add distributionManagement to generated archetype
+      run: |
+          cd target/generated-sources/archetype
+          
+          # </project> 태그 바로 앞에 distributionManagement 추가
+          sed -i 's|</project>|  <distributionManagement>\
+        <repository>\
+        <id>github</id>\
+        <name>GitHub Packages</name>\
+        <url>https://maven.pkg.github.com/wizardee/rest-api-archetype</url>\
+        </repository>\
+        </distributionManagement>\
+        </project>|' pom.xml
+
     - name: Debug - Check generated archetype pom.xml
       run: |
         echo "=== Generated archetype pom.xml content ==="
